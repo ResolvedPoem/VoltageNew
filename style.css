@@ -108,6 +108,12 @@ html {
   animation-iteration-count: infinite;
 }
 
+.back {
+  animation-name: double;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
 @keyframes flux {
   0%   {
     box-shadow: -3px 0px 20px #0078AB;
@@ -123,6 +129,24 @@ html {
   }
   100% {
     box-shadow: -3px 0px 20px #0078AB;
+  }
+}
+
+@keyframes double {
+  0%   {
+    box-shadow: -3px 0px 20px #7C638E;
+  }
+  25%  {
+    box-shadow: 0px 3px 20px #7C638E;
+  }
+  50%  {
+    box-shadow: 3px 0px 20px #7C638E;
+  }
+  75%  {
+    box-shadow: 0px -3px 20px #7C638E;
+  }
+  100% {
+    box-shadow: -3px 0px 20px #7C638E;
   }
 }
 

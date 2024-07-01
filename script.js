@@ -11,7 +11,7 @@ var fullNodeGraph = {};
 var rand;
 
 var firstOffset;
-var randomize = false;
+var randomize = [false];
 var dotsAtDepth;
 var totalDepth;
 var longestChain;
@@ -90,19 +90,32 @@ window.onload = (event) => {
 		};
 	} else if(queryString.replace("?","") == 3) {
 		firstOffset = true;
-		randomize = false;
+		randomize = [false, 6];
 		dotsAtDepth = {
 			"0":[1,0,'0'],
 			"1":['0','0',0],
-			"2":[0,0,0,'0'],
+			"2":[0,0,0,0],
 			"3":[0,0,0],
-			"4":[0,0,'0',0],
-			"5":[0,0,'0'],
+			"4":[0,'0','0',0],
+			"5":['0',0,0],
 			"6":[1,0,0],
+			"7":[1,0],
+		};
+	} else if(queryString.replace("?","") == `nobacktrack`) {
+		firstOffset = true;
+		randomize = [true, 5];
+		dotsAtDepth = {
+			"0":[0,0,0],
+			"1":[0,0],
+			"2":[0,0,0],
+			"3":[0,0],
+			"4":[0,0,0],
+			"5":[0,0],
+			"6":[1,0],
 		};
 	} else if(queryString.replace("?","") == `random`) {
 		firstOffset = true;
-		randomize = true;
+		randomize = [true, 6];
 		dotsAtDepth = {
 			"0":[1,0,0],
 			"1":[0,0,0],
@@ -113,12 +126,12 @@ window.onload = (event) => {
 			"6":[1,0,0],
 		};
 	} else {
-		firstOffset = true;
+		firstOffset = false;
 		dotsAtDepth = {
-			"0":[1,'0'],
-			"1":[0],
-			"2":[0,0],
-			"3":['0'],
+			"0":[0, '0'],
+			"1":[0,0],
+			"2":[],
+			"3":[1,'0'],
 			"4":[1,'0'],
 		};
 	}
@@ -160,15 +173,15 @@ function setSeed() {
 	});
 	generateDots(firstOffset);
 	generateLines();
+	if(randomize[0]) {
+		generateGoalNodes(randomize[1]);
+	}
 	let strength = Array.from(document.querySelectorAll(`.goal`)).length;
 	generateBattery(strength);
 	Array.from(document.querySelectorAll(`.node`)).forEach((element) => {
 		let connectedLines = overlayCheck(element, `line`);
 		element.connectedLines = connectedLines;
 	});
-	if(randomize) {
-		generateGoalNodes(6);
-	}
 
 	document.addEventListener("mousedown", mouseClick);
 }
@@ -266,8 +279,12 @@ function pushSignal(node, strength) {
 				lineIDArray = lineIDArray.sort(function (a, b) {  return a - b;  });
 				let lineID = `${lineIDArray[0]},${lineIDArray[1]}`;
 				let line = document.getElementById(`${lineID}`);
-				line.children[0].style.backgroundColor = `#FAE01F`;
-				line.children[0].style.border = `2px solid #7C638E`;
+				if(line.children[0].style.backgroundColor) {
+					line.children[0].classList.add('back');
+				} else {
+					line.children[0].style.backgroundColor = `#FAE01F`;
+					line.children[0].style.border = `2px solid #7C638E`;
+				}
 			}
 			hitGoal.classList.add(`completed`);
 			hitGoal.classList.add(`active`);
@@ -340,6 +357,7 @@ function resetGrid(rightclick) {
 		element.style.color = `#0078AB`;
 	});
 	Array.from(document.querySelectorAll(`.line`)).forEach((element) => {
+		element.classList.remove('back');
 		element.style.backgroundColor = ``;
 		element.style.border = ``;
 	});
